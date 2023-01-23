@@ -37,6 +37,32 @@ async function run() {
         const result = await employeeCollection.deleteOne(query);
         res.send(result);
       });
+    //block an employee
+    app.put("/blockEmployee/:id", async(req, res)=>{
+        const id = req.params.id;
+        const filter = { _id: ObjectId(id) };
+        const options = { upsert: true };
+        const updateDoc = {
+          $set: {
+            isBlock: true
+          },
+        };
+        const result = await employeeCollection.updateOne(filter, updateDoc, options);
+        res.send(result);
+      })
+    //unblock an employee
+    app.put("/unblockEmployee/:id", async(req, res)=>{
+        const id = req.params.id;
+        const filter = { _id: ObjectId(id) };
+        const options = { upsert: true };
+        const updateDoc = {
+          $set: {
+            isBlock: false
+          },
+        };
+        const result = await employeeCollection.updateOne(filter, updateDoc, options);
+        res.send(result);
+      })
   } finally {
   }
 }
