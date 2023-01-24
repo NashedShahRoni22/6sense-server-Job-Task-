@@ -8,8 +8,7 @@ require("dotenv").config();
 const port = process.env.PORT || 5000;
 //mongo db
 const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
-const uri =
-  `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASSWORD}@cluster0.yx1p8kh.mongodb.net/?retryWrites=true&w=majority`;
+const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASSWORD}@cluster0.yx1p8kh.mongodb.net/?retryWrites=true&w=majority`;
 const client = new MongoClient(uri, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
@@ -25,44 +24,75 @@ async function run() {
       res.send(result);
     });
     //get employee data
-    app.get("/employee", async(req, res)=>{
-        const query = {}
-        const result = await employeeCollection.find(query).toArray();
-        res.send(result);
-    })
+    app.get("/employee", async (req, res) => {
+      const query = {};
+      const result = await employeeCollection.find(query).toArray();
+      res.send(result);
+    });
     //delete an employee
     app.delete("/employee/:id", async (req, res) => {
-        const id = req.params.id;
-        const query = { _id: ObjectId(id) };
-        const result = await employeeCollection.deleteOne(query);
-        res.send(result);
-      });
+      const id = req.params.id;
+      const query = { _id: ObjectId(id) };
+      const result = await employeeCollection.deleteOne(query);
+      res.send(result);
+    });
     //block an employee
-    app.put("/blockEmployee/:id", async(req, res)=>{
-        const id = req.params.id;
-        const filter = { _id: ObjectId(id) };
-        const options = { upsert: true };
-        const updateDoc = {
-          $set: {
-            isBlock: true
-          },
-        };
-        const result = await employeeCollection.updateOne(filter, updateDoc, options);
-        res.send(result);
-      })
+    app.put("/blockEmployee/:id", async (req, res) => {
+      const id = req.params.id;
+      const filter = { _id: ObjectId(id) };
+      const options = { upsert: true };
+      const updateDoc = {
+        $set: {
+          isBlock: true,
+        },
+      };
+      const result = await employeeCollection.updateOne(
+        filter,
+        updateDoc,
+        options
+      );
+      res.send(result);
+    });
     //unblock an employee
-    app.put("/unblockEmployee/:id", async(req, res)=>{
-        const id = req.params.id;
-        const filter = { _id: ObjectId(id) };
-        const options = { upsert: true };
-        const updateDoc = {
-          $set: {
-            isBlock: false
-          },
-        };
-        const result = await employeeCollection.updateOne(filter, updateDoc, options);
-        res.send(result);
-      })
+    app.put("/unblockEmployee/:id", async (req, res) => {
+      const id = req.params.id;
+      const filter = { _id: ObjectId(id) };
+      const options = { upsert: true };
+      const updateDoc = {
+        $set: {
+          isBlock: false,
+        },
+      };
+      const result = await employeeCollection.updateOne(
+        filter,
+        updateDoc,
+        options
+      );
+      res.send(result);
+    });
+    //get an employee for update
+    app.get("/employee/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: ObjectId(id) };
+      const result = await employeeCollection.findOne(query);
+      res.send(result);
+    });
+    //update a task
+    app.put("/updateEmployee/:id", async(req, res)=>{
+      const id = req.params.id;
+      const filter = { _id: ObjectId(id) };
+      const options = { upsert: true };
+      const updatedDetails = req.body;
+      const updateDoc = {
+        $set: {
+          firstName: updatedDetails.firstName,
+          lastName: updatedDetails.lastName,
+          phoneNumber: updatedDetails.phoneNumber,
+        },
+      };
+      const result = await employeeCollection.updateMany(filter, updateDoc, options);
+      res.send(result);
+    })
   } finally {
   }
 }
